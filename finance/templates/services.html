@@ -1,0 +1,219 @@
+{% load static%}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .header {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 20px 0;
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .containerr {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            background-color: #fff;
+            height: calc(100% - 40px); /* Subtract header height */
+            border-bottom: 1px solid #ccc; /* Add border at the bottom of the container */
+        }
+
+        .content {
+            flex: 1;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 0.25in;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .navigation {
+            width: 250px;
+            background: #444;
+            color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+            height: 100%;
+            border-right: 1px solid #ccc;
+            margin-right: 20px;
+        }
+
+        .navigation button {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .navigation button i {
+            margin-right: 10px;
+        }
+
+        .navigation button:hover {
+            background: #555;
+        }
+        .content button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 250px;
+            padding: 15px;
+            margin-bottom: 20px;
+            background: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .content button i {
+            margin-right: 9px; /* Adjust the icon spacing */
+        }
+        .content button:hover {
+            background: #555;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>Finance</h1>
+    </div>
+    <div class="containerr">
+        <div class="navigation">
+            <button onclick="window.location.href='{% url 'home' %}'">
+            <i class="fas fa-home"></i> Home</button>
+
+            <button onclick="window.location.href='{% url 'earnings_list' %}'">
+            <i class="fas fa-file-alt"></i> Earnings</button>
+            <button onclick="window.location.href='{% url 'expenses_list' %}'">
+            <i class="fas fa-file-alt"></i> Expenses</button>
+           
+            <button onclick="window.location.href='{% url 'services' %}'">
+                <i class="fas fa-file-alt"></i>services</button>
+           
+        </div>
+        
+        <div class="container mt-5">
+            <h2>Booked Services</h2>
+            <ul class="list-group">
+                <!-- Header Row -->
+                <li class="list-group-item list-group-item-info">
+                    <div class="row font-weight-bold">
+                        <div class="col-md-1">#</div>
+                        <div class="col-md-3">Client Name</div>
+                        <div class="col-md-4">Service Description</div>
+                        <div class="col-md-2">Due Date</div>
+                        <div class="col-md-2">Amount Due</div>
+                    </div>
+                </li>
+        
+                <!-- Loop through booked services -->
+                {% for service in booked_services %}
+                    <li class="list-group-item" onclick="toggleActions();" >
+                        <div class="row">
+                            <div class="col-md-1">{{ forloop.counter }}</div>
+                            <div class="col-md-3">{{ service.client_name }}</div>
+                            <div class="col-md-4">{{ service.service_description }}</div>
+                            <div class="col-md-2">{{ service.due_date }}</div>
+                            <div class="col-md-2">${{ service.amount_due }}</div>
+                          
+                                <form method="post" action="{% url 'delete_services' service.id %}" class="delete-form">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger p-0"  >
+                                        <i class="fas fa-trash-alt fa-xs"></i>
+                                    </button>
+                                </form>
+                           
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+
+        <div>
+            <button onclick="toggleFormVisibility()" class="btn btn-primary"  id="buttonlabel">Book Service</button>
+    
+            <form id="bookingForm" method="post" action="{% url 'services' %}" style="display: none;">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-success">Book Service</button>
+            </form>
+        </div>
+      
+        </div>
+        
+       
+    </div>
+
+    
+        <script>
+            function toggleFormVisibility() {
+                var form = document.getElementById('bookingForm');
+                var button = document.getElementById('buttonlabel');
+        
+                if (form.style.display === 'none') {
+                    // Show the form and hide the button
+                    form.style.display = 'block';
+                    button.style.display = 'none';
+                } else {
+                    // Hide the form and show the button
+                    form.style.display = 'none';
+                    button.style.display = 'block';
+                }
+            }
+
+            function toggleActions() {
+                
+                    var deleteButtonCell = row.querySelector('.delete-button-cell');
+                    var deleteForm = deleteButtonCell.querySelector('.delete-form');
+            
+                    if (deleteButtonCell.classList.contains('active')) {
+                        // If delete button is already active, submit the form
+                        deleteForm.submit();
+                    } else {
+                        // Toggle the visibility of the delete button
+                        var deleteButton = deleteForm.querySelector('button');
+                        deleteButton.style.display = 'block';
+                        deleteButtonCell.classList.add('active');
+                    }
+                }
+            
+        </script>
+   
+    
+
+</body>
+
+</html>

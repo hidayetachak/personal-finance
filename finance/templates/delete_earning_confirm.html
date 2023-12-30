@@ -1,0 +1,18 @@
+<!-- delete_earning_confirm.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Delete Earning</title>
+</head>
+<body>
+    <h2>Confirm Deletion</h2>
+    <p>Are you sure you want to delete the entry?</p>
+    
+    <form method="post">
+        {% csrf_token %}
+        <input type="submit" value="Delete">
+    </form>
+
+    <a href="{% url 'earnings_list' %}">Cancel</a>
+</body>
+</html>
